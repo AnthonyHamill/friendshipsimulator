@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Podcast and Music Player</title>
+    <style>
+        body {
+            background-color: white; /* Set background to white */
+            color: black; /* Set text color to black */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+            line-height: 1.6; /* Improve readability */
+            padding: 20px; /* Padding around the content */
+        }
+
+        header {
+            text-align: center; /* Center align header content */
+            margin-bottom: 50px; /* Space below the header */
+        }
+
+        .episode-list {
+            max-height: 300px; /* Set a max height for scrollable area */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 2px solid #ddd; /* Subtle border around the list */
+            padding: 10px;
+            background: #f9f9f9; /* Light background for the list */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Soft shadow for depth */
+        }
+
+        audio {
+            display: block; /* Make audio players block elements */
+            margin: 20px auto; /* Center audio players and add space around */
+            width: 100%; /* Full width */
+            max-width: 600px; /* Max width for larger screens */
+        }
+
+        form {
+            text-align: center; /* Center align form */
+            margin-bottom: 40px; /* Space below each form */
+        }
+
+        button {
+            background-color: #ffffff; /* White background for buttons */
+            color: black; /* Black text color */
+            border: 2px solid black; /* Black border */
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+        }
+
+        button:hover {
+            background-color: black; /* Black background on hover */
+            color: white; /* White text on hover */
+        }
+
+        input[type="file"], input[type="text"] {
+            color: black; /* Black text color for inputs */
+            background: #ffffff; /* White background for inputs */
+            border: 2px solid black; /* Black border for inputs */
+            padding: 8px;
+            margin-bottom: 20px;
+            width: 80%; /* Wider input fields */
+            max-width: 500px; /* Maximum width for input fields */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Friendship Simulator</h1>
+    </header>
+
+    <!-- Form for user to enter custom RSS feed URL -->
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="text" name="user_feed_url" placeholder="Enter custom RSS URL">
+        <button type="submit">Load Podcast</button>
+    </form>
+
+    <!-- User Specified Podcast Player Section -->
+    <h2>User Specified Podcast Player</h2>
+    <div class="episode-list">
+        <ul>
+            {% for entry in user_entries %}
+            <li>
+                <strong>{{ entry.title }}</strong>
+                <button onclick="setPodcastSource('{{ entry.enclosures[0].href }}', 'user')">Play</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <audio id="userPodcastPlayer" controls>
+        <source src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Default Podcast Player Section -->
+    <h2>Default Music Player</h2>
+    <div class="episode-list">
+        <ul>
+            {% for entry in default_entries %}
+            <li>
+                <strong>{{ entry.title }}</strong>
+                <button onclick="setPodcastSource('{{ entry.enclosures[0].href }}', 'default')">Play</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <audio id="defaultPodcastPlayer" controls>
+        <source src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Music Player Section -->
+    <h2>Audio File Player</h2>
+    <audio id="musicPlayer" controls>
+        <source src="{{ music_path }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- File Upload Form for Music Files -->
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="file" name="audioFile">
+        <button type="submit">Upload and Play</button>
+        {% if uploaded_file_msg %}
+            <p>{{ uploaded_file_msg }}</p>
+        {% endif %}
+    </form>
+
+    <script>
+        function setPodcastSource(src, playerType) {
+            var player = playerType === 'default' ? 'defaultPodcastPlayer' : 'userPodcastPlayer';
+            var audioPlayer = document.getElementById(player);
+            audioPlayer.src = src;
+            audioPlayer.load();
+            audioPlayer.play();
+        }
+    </script>
+</body>
+</html>
